@@ -1,0 +1,66 @@
+<link rel="stylesheet" href="https://dl.dropboxusercontent.com/u/43615815/CSS/bootstrap.css"> 
+<% content_for :title, "Home of the Family Map" %>
+
+<div class="container-full">
+
+      <div class="row">
+       
+        <div class="col-lg-12 text-center v-center">
+          
+          <h1>Family Map</h1>
+          <p class="lead">An Interactive Behavioural Mapping System</p>
+          
+          <br>
+		  
+        </div>
+        
+      </div> <!-- /row -->
+  
+
+
+</div> <!-- /container full -->
+
+<div class="container">
+  
+  	<hr>
+  
+  	<div class="row">
+        <div class="col-md-3">
+          <div class="panel panel-default">
+            <div class="panel-heading"><h3><%= link_to 'Load Family Map', controller: 'fmaps' %></h3></div>
+            <div class="panel-body">Click here to go to previously saved family maps. Remember to log in first.
+            </div>
+          </div>
+        </div>
+		<div class="col-md-3">
+          <div class="panel panel-default">
+            <div class="panel-heading"><h3><%= link_to 'New Family Map', {:controller => 'fmaps', :action => 'new'} %></h3></div>
+            <div class="panel-body">Click here to start work on a new family map. Remember to log in first.
+            </div>
+          </div>
+        </div>
+      	<div class="col-md-3">
+        	<div class="panel panel-default">
+            <div class="panel-heading"><h3><%= link_to 'Log In', {:controller => 'sessions', :action => 'new'} %></h3></div>
+            <div class="panel-body">Already have an account? Click above to log in and start making maps.
+            </div>
+          </div>
+        </div>
+      	<div class="col-md-3">
+        	<div class="panel panel-default">
+            <div class="panel-heading"><h3><%= link_to 'About', {:controller => 'fmaps', :action => 'about'} %></h3></div>
+            <div class="panel-body"> Go here for more information regarding family maps, including an FAQ section and more details.
+            </div>
+          </div>
+        </div>
+    </div>	
+  
+	<div class="row">
+        <div class="col-lg-12">
+        <br><br>
+			<p class="pull-left"><%= link_to 'Log Out', {:controller => 'sessions', :action => 'destroy'} %></p>
+			<p class="pull-right">Designed and Developed by: Joshua Inniger, Joseph Alflen, and Ailun Shen</p>
+        <br><br>
+        </div>
+    </div>
+</div>

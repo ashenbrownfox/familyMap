@@ -1,0 +1,30 @@
+<link rel="stylesheet" href="https://dl.dropboxusercontent.com/u/43615815/CSS/bootstrap.css"> 
+<h1>Index</h1>
+<%= link_to 'New Family Map', new_fmap_path %>
+<table class="table table-hover">
+    <tr>
+    <th>Title</th>
+	<th>User</th>
+	<th>Family</th>
+    <th>Notes</th>
+	<th>Extra</th>
+	<th>Load</th>
+	<th>Delete</th>
+    <th colspan="8"></th>
+  </tr>
+ 
+<% @fmaps.each do |fmap| %>
+	<% if fmap.username == current_user.email %>
+  <tr>
+    <td><%= fmap.title %></td>
+	<td><%= fmap.username %></td>
+	<td><%= fmap.family %></td>
+    <td><%= fmap.notes %></td>
+	<td><%= fmap.extra %></td>
+    <td><%= link_to 'Load', fmap_path(fmap) %></td>
+	<td><%= link_to 'Delete', fmap_path(fmap),
+                    method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+	<% end %>
+<% end %>
+</table>
