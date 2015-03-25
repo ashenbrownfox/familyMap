@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<link rel="stylesheet" href="joint.css" />
+<script src="joint.js"></script>
+<script src="joint.shapes.erd.js"></script>
+<script src="joint.dia.command.js" type="text/javascript" ></script>
+<script type="text/javascript" src="jquery-1.11.1.min.js"></script>
+<style>
+</style>
+</head>
+
+
+<div>
+    <button class="router-switch" data-connector="normal">Normal /<br> None</button>
+    <button class="router-switch" data-connector="rounded">Rounded /<br> None</button>
+    <button class="router-switch" data-connector="smooth">Smooth /<br> None</button>
+    <button class="router-switch" data-router="orthogonal" data-connector="normal">Normal /<br> Orthogonal</button>
+    <button class="router-switch" data-router="orthogonal" data-connector="rounded">Rounded /<br> Orthogonal</button>
+    <button class="router-switch" data-router="manhattan" data-connector="normal">Normal /<br> Manhattan</button>
+    <button class="router-switch" data-router="manhattan" data-connector="rounded">Rounded /<br> Manhattan</button>
+    <button class="router-switch" data-router="metro" data-connector="normal">Normal /<br> Metro</button>
+    <button class="router-switch" data-router="metro" data-connector="rounded">Rounded /<br> Metro</button>
+  </div>
+
+<div id="paper"> </div>
+<script>
+var graph = new joint.dia.Graph;
+
+var paper = new joint.dia.Paper({
+    el: $('#paper'),
+    width: 1000,
+    height: 600,
+    gridSize: 10,
+    model: graph
+});
+
+var erd = joint.shapes.erd;
+
+var element = function(elm, x, y, label) {
+    var cell = new elm({ position: { x: x, y: y }, attrs: { text: { text: label }}});
+    graph.addCell(cell);
+    return cell;
+};
+var myLink;
+var link = function(elm1, elm2) {
+    myLink = new erd.Line({ source: { id: elm1.id }, target: { id: elm2.id }, 
+		router: { name: 'manhattan'},connector: { name: 'rounded' },
+		attrs: {
+        '.connection': {
+            stroke: '#333333',
+            'stroke-width': 3
+        },
+        '.marker-target': {
+            fill: '#333333',
+            d: 'M 10 0 L 0 5 L 10 10 z'
+        }
+    }
+		});
+    graph.addCell(myLink);
+    return myLink;
+};
+
+var employee = element(erd.Entity, 100, 200, "Employee");
+var salesman = element(erd.Entity, 100, 400, "Salesman");
+var wage = element(erd.WeakEntity, 530, 200, "Wage");
+var paid = element(erd.IdentifyingRelationship, 350, 190, "gets paid");
+var isa = element(erd.ISA, 125, 300, "ISA");
+var number = element(erd.Key, 0, 90, "number");
+var nameEl = element(erd.Normal, 75, 30, "name");
+var skills = element(erd.Multivalued, 150, 90, "skills");
+var amount = element(erd.Derived, 440, 80, "amount");
+var date = element(erd.Normal, 590, 80, "date");
+var plate = element(erd.Key, 405, 500, "plate");
+var car = element(erd.Entity, 430, 400, "Company car");
+var uses = element(erd.Relationship, 300, 390, "uses");
+
+link(employee, paid).cardinality('1');
+link(employee, number);
+link(employee, nameEl);
+link(employee, skills);
+link(employee, isa);
+link(isa, salesman);
+link(salesman, uses).cardinality('0..1');
+link(car, uses).cardinality('1..1');
+link(car, plate);
+link(wage, paid).cardinality('N');
+link(wage, amount);
+
+$('.router-switch').on('click', function(evt) {
+	
+    var router = $(evt.target).data('router');
+    var connector = $(evt.target).data('connector');
+	alert(router+" "+connector);
+    if (router) {
+        MyLink.set('router', { name: router });
+    } else {
+        MyLink.unset('router');
+    }
+
+    MyLink.set('connector', { name: connector });
+});
+</script>
+
+</body>
+</html>

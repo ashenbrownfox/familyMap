@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<link rel="stylesheet" href="joint.css" />
+<script src="joint.js"></script>
+<script src="joint.shapes.erd.js"></script>
+<script src="joint.dia.command.js" type="text/javascript" ></script>
+<script type="text/javascript" src="jquery-1.11.1.min.js"></script>
+<style>
+</style>
+</head>
+<h3>Choice 4</h3><br>
+<p>This method has automatic routing and a orthogonal style, with rounded corners.</p>
+<div id="paper"> </div>
+
+<script>
+var graph = new joint.dia.Graph;
+
+var paper = new joint.dia.Paper({
+    el: $('#paper'),
+    width: 800,
+    height: 600,
+    gridSize: 1,
+    model: graph
+});
+
+var erd = joint.shapes.erd;
+
+var element = function(elm, x, y, label) {
+    var cell = new elm({ position: { x: x, y: y }, attrs: { text: { text: label }}});
+    graph.addCell(cell);
+    return cell;
+};
+var myLink;
+var link = function(elm1, elm2) {
+    myLink = new erd.Line({ source: { id: elm1.id }, target: { id: elm2.id }, 
+		router: { name: 'orthogonal'},connector: { name: 'rounded' },
+		attrs: {
+        '.connection': {
+            stroke: '#333333',
+            'stroke-width': 3
+        },
+        '.marker-target': {
+            fill: '#333333',
+            d: 'M 10 0 L 0 5 L 10 10 z'
+        }
+    }
+		});
+    graph.addCell(myLink);
+    return myLink;
+};
+
+var myLink2;
+var link2 = function(elm1, elm2) {
+    myLink2 = new erd.Line({ source: { id: elm1.id }, target: { id: elm2.id }, 
+		connector: { name: 'normal' },
+		attrs: {
+        '.connection': {
+            stroke: '#333333',
+            'stroke-width': 3
+        }
+    }
+		});
+    graph.addCell(myLink2);
+    return myLink2;
+};
+
+var rec1 = element(erd.Entity, 10, 125, "Sally sees dirty dishes");//rectangle
+var rec2 = element(erd.Entity, 170, 100, "Bill hates doing dishes");
+var rec3 = element(erd.Entity, 340, 100, "He's mad");
+var rec4 = element(erd.Entity, 450, 200, "He will smoke pot");
+
+var rec6 = element(erd.Entity, 225, 10, "I hate doing dishes");//rectangle
+var rec7 = element(erd.Entity, 630, 25, "I want a joint");
+var rec8 = element(erd.Entity, 20, 515, "She needs a joint");
+var rec9 = element(erd.Entity, 630, 100, "Stash is in the garage");
+var rec10 = element(erd.Entity, 480, 530, "I'll stay until she is calm");
+var rec11 = element(erd.Entity, 300, 530, "Hears Sally's anger");
+
+var dia1 = element(erd.Relationship, 0, 10, "Angry");//diamond
+var dia2 = element(erd.Relationship, 220, 200, "Angry");
+var dia3 = element(erd.Relationship, 250, 430, "Calm");
+
+var dia4 = element(erd.Relationship, 400, 10, "Angry");
+var dia5 = element(erd.Relationship, 200, 515, "Worried");
+
+var ov1 = element(erd.Normal, 100, 5, "Orders Bill wash");//oval
+var ov2 = element(erd.Normal, 320, 200, "Yells don't smoke");
+var ov3 = element(erd.Normal, 320, 300, "Goes to garage");
+var ov10 = element(erd.Normal, 150, 357, "Puffs joint");
+
+var ov4 = element(erd.Normal, 500, 25, "Grimaces");
+var ov5 = element(erd.Normal, 650, 175, "Goes to garage");
+var ov6 = element(erd.Normal, 650, 250, "Ignores Sally");
+var ov7 = element(erd.Normal, 650, 530, "Puffs joint");
+var ov8 = element(erd.Normal, 50, 430, "Offers joint");
+var ov9 = element(erd.Normal, 50, 357, "Puffs joint");
+
+//#0099FF//blue
+//#33CC33//green
+rec11.attr({
+    '.outer': { fill: '#33CC33', stroke: '#29A329' }//green
+});
+rec11.attr({
+    '.outer': { fill: '#33CC33', stroke: '#29A329' }//green
+}); 
+rec10.attr({
+    '.outer': { fill: '#33CC33', stroke: '#29A329' }//green
+}); 
+rec9.attr({
+    '.outer': { fill: '#33CC33', stroke: '#29A329' }//green
+}); 
+rec8.attr({
+    '.outer': { fill: '#33CC33', stroke: '#29A329' }//green
+}); 
+rec7.attr({
+    '.outer': { fill: '#33CC33', stroke: '#29A329' }//green
+}); 
+rec6.attr({
+    '.outer': { fill: '#33CC33', stroke: '#29A329' }//green
+});
+dia4.attr({
+    '.outer': { fill: '#33CC33', stroke: '#29A329' }//green
+}); 
+dia5.attr({
+    '.outer': { fill: '#33CC33', stroke: '#29A329' }//green
+});
+ov4.attr({
+    '.outer': { fill: '#33CC33', stroke: '#29A329' }//green
+});
+ov5.attr({
+    '.outer': { fill: '#33CC33', stroke: '#29A329' }//green
+});  
+ov6.attr({
+    '.outer': { fill: '#33CC33', stroke: '#29A329' }//green
+});  
+ov7.attr({
+    '.outer': { fill: '#33CC33', stroke: '#29A329' }//green
+});  
+ov8.attr({
+    '.outer': { fill: '#33CC33', stroke: '#29A329' }//green
+});  
+ov9.attr({
+    '.outer': { fill: '#33CC33', stroke: '#29A329' }//green
+});     
+////////////////////////////////////////////////////////////
+rec1.attr({
+    '.outer': { fill: '#00CCFF', stroke: '#00A3CC' }//green
+}); 
+rec2.attr({
+    '.outer': { fill: '#00CCFF', stroke: '#00A3CC' }//green
+}); 
+rec3.attr({
+    '.outer': { fill: '#00CCFF', stroke: '#00A3CC' }//green
+}); 
+rec4.attr({
+    '.outer': { fill: '#00CCFF', stroke: '#00A3CC' }//green
+}); 
+ov1.attr({
+    '.outer': { fill: '#00CCFF', stroke: '#00A3CC' }//green
+}); 
+ov2.attr({
+    '.outer': { fill: '#00CCFF', stroke: '#00A3CC' }//green
+}); 
+ov3.attr({
+    '.outer': { fill: '#00CCFF', stroke: '#00A3CC' }//green
+});
+ov10.attr({
+    '.outer': { fill: '#00CCFF', stroke: '#00A3CC' }//green
+});  
+dia1.attr({
+    '.outer': { fill: '#00CCFF', stroke: '#00A3CC' }//green
+}); 
+dia2.attr({
+    '.outer': { fill: '#00CCFF', stroke: '#00A3CC' }//green
+}); 
+dia3.attr({
+    '.outer': { fill: '#00CCFF', stroke: '#00A3CC' }//green
+}); 
+
+
+link(rec1,dia1);
+link(dia1,ov1);
+link(ov1,rec6);
+link(ov1,rec2);
+link(rec6,dia4);
+link(dia4,ov4);
+link(ov4,rec7);
+link(rec7,rec9);
+link(rec9,ov5);
+link(ov5,ov6);
+link(ov6,ov7);
+link(ov7,rec10);
+link(rec10,rec11);
+link(rec11,dia5);
+link(dia5,rec8);
+link(rec8,ov8);
+link(ov8,ov9);
+link(rec2,rec3);
+link(rec3,rec4);
+link(rec4,ov2);
+link(ov2,dia2);
+link(dia2,ov3);
+link(ov3,dia3);
+link(dia3,ov10);
+
+link2(rec3,ov4);
+link2(ov3,rec11);
+link2(dia3,ov8);
+</script>
+
+</body>
+</html>

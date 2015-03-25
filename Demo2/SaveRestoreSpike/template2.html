@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<link rel="stylesheet" href="joint.css" />
+<script src="joint.js"></script>
+<script src="joint.shapes.erd.js"></script>
+<script src="joint.dia.command.js" type="text/javascript" ></script>
+<script type="text/javascript" src="jquery-1.11.1.min.js"></script>
+<style>
+</style>
+</head>
+<h3>Choice 1</h3><br>
+<p>This method has no automatic routing and a normal style.</p>
+<div id="paper"> </div>
+
+<script>
+var uID;
+var jsonString;
+var graph = new joint.dia.Graph;
+
+var paper = new joint.dia.Paper({
+    el: $('#paper'),
+    width: 800,
+    height: 600,
+    gridSize: 1,
+    model: graph
+});
+
+var commandManager = new joint.dia.CommandManager({ graph: graph });
+var erd = joint.shapes.erd;
+
+var element = function(elm, x, y, label) {
+    var cell = new elm({ position: { x: x, y: y }, attrs: { text: { text: label }}});
+    graph.addCell(cell);
+    return cell;
+};
+var myLink;
+var link = function(elm1, elm2) {
+    myLink = new erd.Line({ source: { id: elm1.id }, target: { id: elm2.id }, 
+		connector: { name: 'normal' },
+		attrs: {
+        '.connection': {
+            stroke: '#333333',
+            'stroke-width': 3
+        },
+        '.marker-target': {
+            fill: '#333333',
+            d: 'M 10 0 L 0 5 L 10 10 z'
+        }
+    }
+		});
+    graph.addCell(myLink);
+    return myLink;
+};
+
+var employee = element(erd.Entity, 100, 200, "Employee");
+var salesman = element(erd.Entity, 100, 400, "Salesman");
+var wage = element(erd.WeakEntity, 530, 200, "Wage");
+var paid = element(erd.IdentifyingRelationship, 350, 190, "gets paid");
+var isa = element(erd.ISA, 125, 300, "ISA");
+var number = element(erd.Key, 0, 90, "number");
+var nameEl = element(erd.Normal, 75, 30, "name");
+var skills = element(erd.Multivalued, 150, 90, "skills");
+var amount = element(erd.Derived, 440, 80, "amount");
+var date = element(erd.Normal, 590, 80, "date");
+var plate = element(erd.Key, 405, 500, "plate");
+var car = element(erd.Entity, 430, 400, "Company car");
+var uses = element(erd.Relationship, 300, 390, "uses");
+
+link(employee, paid).cardinality('1');
+link(employee, number);
+link(employee, nameEl);
+link(employee, skills);
+link(employee, isa);
+link(isa, salesman);
+link(salesman, uses).cardinality('0..1');;
+link(car, uses).cardinality('1..1');
+link(car, plate);
+link(wage, paid).cardinality('N');
+link(wage, amount);
+link(wage, date);
+
+$('#undo').on('click', _.bind(commandManager.undo, commandManager));
+$('#redo').on('click', _.bind(commandManager.redo, commandManager));
+
+function changeText(){
+var textBoxText = document.getElementById("textBox").value;
+employee.attr({
+    text: { text: textBoxText}
+});
+}
+
+paper.on('cell:pointerdblclick', 
+    function(cellView, evt, x, y) { 
+		var elm = graph.getCell(cellView.model.id);
+		var txt = elm.attr('text/text');
+		document.getElementById("name").value = txt;
+		uID = cellView.model.id;
+		div_show();
+        //alert('cell view ' + cellView.model.id + ' was clicked \r\n It contains the text: ' + txt);
+    }
+);
+
+function changeText2(){
+var textBoxText = document.getElementById("name").value;
+var elm = graph.getCell(uID);
+elm.attr({
+    text: { text: textBoxText}
+});
+}
+
+$('.router-switch').on('click', function(evt) {
+
+    var router = $(evt.target).data('router');
+    var connector = $(evt.target).data('connector');
+
+    if (router) {
+        myLink.set('router', { name: router });
+    } else {
+        myLink.unset('router');
+    }
+    myLink.set('connector', { name: connector });
+});
+//Function To Display Popup
+function div_show() {
+document.getElementById('abc').style.display = "block";
+}
+//Function to Hide Popup
+function div_hide(){
+document.getElementById('abc').style.display = "none";
+changeText2();
+}
+
+//Function to serialize graph
+function serialize_graph(){
+jsonString = JSON.stringify(graph.toJSON());
+console.log(jsonString);
+}
+
+//Function to deserialize graph
+function deserialize_graph(){
+graph.fromJSON(JSON.parse(jsonString));
+}
+</script>
+
+</body>
+</html>

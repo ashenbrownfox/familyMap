@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<link rel="stylesheet" href="joint.css" />
+<script src="joint.js"></script>
+<script src="joint.shapes.erd.js"></script>
+<script src="joint.dia.command.js" type="text/javascript" ></script>
+<script type="text/javascript" src="jquery-1.11.1.min.js"></script>
+<style>
+@import "http://fonts.googleapis.com/css?family=Raleway";
+/*----------------------------------------------
+CSS settings for HTML div Exact Center
+------------------------------------------------*/
+#abc {
+width:100%;
+height:100%;
+opacity:.95;
+top:0;
+left:0;
+display:none;
+position:fixed;
+background-color:#313131;
+overflow:auto
+}
+img#close {
+position:absolute;
+right:-14px;
+top:-14px;
+cursor:pointer
+}
+div#popupContact {
+position:absolute;
+left:50%;
+top:17%;
+margin-left:-202px;
+font-family:'Raleway',sans-serif
+}
+form {
+max-width:300px;
+min-width:250px;
+padding:10px 50px;
+border:2px solid gray;
+border-radius:10px;
+font-family:raleway;
+background-color:#fff
+}
+p {
+margin-top:30px
+}
+h2 {
+background-color:#FEFFED;
+padding:20px 35px;
+margin:-10px -50px;
+text-align:center;
+border-radius:10px 10px 0 0
+}
+hr {
+margin:10px -50px;
+border:0;
+border-top:1px solid #ccc
+}
+input[type=text] {
+width:82%;
+padding:10px;
+margin-top:30px;
+border:1px solid #ccc;
+padding-left:40px;
+font-size:16px;
+font-family:raleway
+}
+#name {
+background-image:url(../images/name.jpg);
+background-repeat:no-repeat;
+background-position:5px 7px
+}
+#email {
+background-image:url(../images/email.png);
+background-repeat:no-repeat;
+background-position:5px 7px
+}
+textarea {
+background-image:url(../images/msg.png);
+background-repeat:no-repeat;
+background-position:5px 7px;
+width:82%;
+height:95px;
+padding:10px;
+resize:none;
+margin-top:30px;
+border:1px solid #ccc;
+padding-left:40px;
+font-size:16px;
+font-family:raleway;
+margin-bottom:30px
+}
+#submit {
+text-decoration:none;
+width:100%;
+text-align:center;
+display:block;
+background-color:#FFBC00;
+color:#fff;
+border:1px solid #FFCB00;
+padding:10px 0;
+font-size:20px;
+cursor:pointer;
+border-radius:5px
+}
+span {
+color:red;
+font-weight:700
+}
+button {
+height:45px;
+border-radius:3px;
+background-color:#cd853f;
+color:#fff;
+font-family:'Raleway',sans-serif;
+font-size:18px;
+cursor:pointer
+}
+</style>
+</head>
+
+<body id="body" style="overflow:hidden;">
+<button type="button" id="undo">Undo</button>
+<button type="button" id="redo">Redo</button>
+<!-- <button type="button" id="save">Save</button>
+<button type="button" id="load">Load</button> -->
+<button onclick="serialize_graph()">Save</button>
+<button onclick="deserialize_graph()">Load</button>
+<p>Double Click shape to edit.</p>
+<div id="paper"> </div>
+<div id="abc">
+<!-- Popup Div Starts Here -->
+<div id="popupContact">
+<!-- Contact Us Form -->
+<form action="#" id="form" method="post" name="form">
+<img id="close" src="close.png" onclick ="div_hide()">
+<h2>Box Info:</h2>
+<hr>Text:
+<input id="name" name="name" placeholder="Name" type="text">
+<a id="submit" onClick="div_hide()">Update</a>
+</form>
+</div>
+<!-- Popup Div Ends Here -->
+</div>
+<script>
+var uID;
+var jsonString;
+var graph = new joint.dia.Graph;
+
+var paper = new joint.dia.Paper({
+    el: $('#paper'),
+    width: 800,
+    height: 600,
+    gridSize: 1,
+    model: graph
+});
+
+var commandManager = new joint.dia.CommandManager({ graph: graph });
+var erd = joint.shapes.erd;
+
+var element = function(elm, x, y, label) {
+    var cell = new elm({ position: { x: x, y: y }, attrs: { text: { text: label }}});
+    graph.addCell(cell);
+    return cell;
+};
+var myLink;
+var link = function(elm1, elm2) {
+	var xx = elm1.attr('.outer/fill');
+    myLink = new erd.Line({ source: { id: elm1.id }, target: { id: elm2.id }, 
+		router: { name: 'manhattan'},connector: { name: 'rounded' },
+		attrs: {
+        '.connection': {
+            stroke: '#333333',
+            'stroke-width': 3
+        },
+        '.marker-target': {
+            fill: '#333333',
+            d: 'M 10 0 L 0 5 L 10 10 z'
+        }
+    }
+		});
+    graph.addCell(myLink);
+    return myLink;
+};
+
+var employee = element(erd.Entity, 100, 200, "Employee");
+var salesman = element(erd.Entity, 100, 400, "Salesman");
+var wage = element(erd.WeakEntity, 530, 200, "Wage");
+var paid = element(erd.IdentifyingRelationship, 350, 190, "gets paid");
+var nameEl = element(erd.Normal, 75, 30, "name");
+var amount = element(erd.Derived, 440, 80, "amount");
+var date = element(erd.Normal, 590, 300, "date");
+var plate = element(erd.Key, 405, 500, "plate");
+var car = element(erd.Entity, 430, 400, "Company car");
+var uses = element(erd.Relationship, 300, 390, "uses");
+
+link(paid, employee);
+link(employee, nameEl);
+link(employee, salesman);
+link(salesman, uses);
+link(uses, car);
+link(paid, uses);
+link(plate, car);
+link(wage, paid);
+link(wage, amount);
+link(date, wage);
+
+$('#undo').on('click', _.bind(commandManager.undo, commandManager));
+$('#redo').on('click', _.bind(commandManager.redo, commandManager));
+
+function changeText(){
+var textBoxText = document.getElementById("textBox").value;
+employee.attr({
+    text: { text: textBoxText}
+});
+}
+
+paper.on('cell:pointerdblclick', 
+    function(cellView, evt, x, y) { 
+		var elm = graph.getCell(cellView.model.id);
+		var txt = elm.attr('text/text');
+		document.getElementById("name").value = txt;
+		uID = cellView.model.id;
+		div_show();
+        //alert('cell view ' + cellView.model.id + ' was clicked \r\n It contains the text: ' + txt);
+    }
+);
+
+function changeText2(){
+var textBoxText = document.getElementById("name").value;
+var elm = graph.getCell(uID);
+elm.attr({
+    text: { text: textBoxText}
+});
+}
+
+//Function To Display Popup
+function div_show() {
+document.getElementById('abc').style.display = "block";
+}
+//Function to Hide Popup
+function div_hide(){
+document.getElementById('abc').style.display = "none";
+changeText2();
+}
+
+//Function to serialize graph
+function serialize_graph(){
+jsonString = JSON.stringify(graph.toJSON());
+console.log(jsonString);
+}
+
+//Function to deserialize graph
+function deserialize_graph(){
+graph.fromJSON(JSON.parse(jsonString));
+}
+</script>
+
+</body>
+</html>

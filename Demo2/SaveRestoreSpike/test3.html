@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<link rel="stylesheet" href="joint.css" />
+<script src="joint.js"></script>
+<script src="joint.shapes.erd.js"></script>
+<script src="joint.dia.command.js" type="text/javascript" ></script>
+<script type="text/javascript" src="jquery-1.11.1.min.js"></script>
+<style>
+</style>
+</head>
+
+<div>
+    <button class="router-switch" data-connector="normal">Normal /<br> None</button>
+    <button class="router-switch" data-connector="rounded">Rounded /<br> None</button>
+    <button class="router-switch" data-connector="smooth">Smooth /<br> None</button>
+    <button class="router-switch" data-router="orthogonal" data-connector="normal">Normal /<br> Orthogonal</button>
+    <button class="router-switch" data-router="orthogonal" data-connector="rounded">Rounded /<br> Orthogonal</button>
+    <button class="router-switch" data-router="manhattan" data-connector="normal">Normal /<br> Manhattan</button>
+    <button class="router-switch" data-router="manhattan" data-connector="rounded">Rounded /<br> Manhattan</button>
+    <button class="router-switch" data-router="metro" data-connector="normal">Normal /<br> Metro</button>
+    <button class="router-switch" data-router="metro" data-connector="rounded">Rounded /<br> Metro</button>
+  </div>
+
+<p>Double Click shape to edit.</p>
+<div id="paper"> </div>
+
+<script>
+var graph = new joint.dia.Graph;
+
+var paper = new joint.dia.Paper({
+    el: $('#paper'),
+    width: 1000,
+    height: 600,
+    gridSize: 10,
+    model: graph
+});
+
+var source = new joint.shapes.basic.Rect({
+    position: { x: 50, y: 50 },
+    size: { width: 140, height: 70 },
+    attrs: {
+        rect: {
+            fill: {
+                type: 'linearGradient',
+                stops: [
+                    { offset: '0%', color: '#45484d' },
+                    { offset: '100%', color: '#000000' }
+                ],
+                attrs: { x1: '0%', y1: '0%', x2: '0%', y2: '100%' }
+            }
+        },
+        text: {
+            text: 'Source',
+            fill: '#fefefe',
+            'font-size': 18,
+            'font-weight': 'bold', 
+            'font-variant': 'small-caps'
+        }
+    }
+});
+
+var target = source.clone().translate(750, 400).attr('text/text', 'Target');
+
+var link = new joint.dia.Link({
+    source: { id: source.id },
+    target: { id: target.id },
+    router: { name: 'manhattan' },
+    connector: { name: 'rounded' },
+    attrs: {
+        '.connection': {
+            stroke: '#333333',
+            'stroke-width': 3
+        },
+        '.marker-target': {
+            fill: '#333333',
+            d: 'M 10 0 L 0 5 L 10 10 z'
+        }
+    }
+});
+
+var obstacle = source.clone().translate(300, 100).attr({    
+    text: {
+        text: 'Obstacle',
+        fill: '#2e2e2e'
+    },
+    rect: {
+        fill: {
+            stops: [{ color: '#93cede' }, { color: '#49a5bf' }]
+        }
+    }
+});
+
+var obstacles = [
+    obstacle,
+    obstacle.clone().translate(200, 100),
+    obstacle.clone().translate(-200, 150)
+];
+
+graph.addCells(obstacles).addCells([source, target, link]);
+
+link.toBack();
+
+graph.on('change:position', function(cell) {
+
+    // has an obstacle been moved? Then reroute the link.
+    if (_.contains(obstacles, cell)) paper.findViewByModel(link).update();
+});
+
+$('.router-switch').on('click', function(evt) {
+
+    var router = $(evt.target).data('router');
+    var connector = $(evt.target).data('connector');
+
+    if (router) {
+        link.set('router', { name: router });
+    } else {
+        link.unset('router');
+    }
+
+    link.set('connector', { name: connector });
+});
+</script>
+
+</body>
+</html>
